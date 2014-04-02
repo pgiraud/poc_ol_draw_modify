@@ -7,13 +7,8 @@ var options = {
             dragPanOptions: {
                 enableKinetic: true
             }
-        }),
-        new OpenLayers.Control.Zoom(),
-        new OpenLayers.Control.LayerSwitcher()
+        })
     ],
-    projection: new OpenLayers.Projection('EPSG:900913'),
-    maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
-    resolutions: resolutions,
     theme: null,
     layers: [new OpenLayers.Layer.OSM()]
 };
