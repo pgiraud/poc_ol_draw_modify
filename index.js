@@ -24,17 +24,31 @@ map.setCenter(
 
 
 
-var style = new OpenLayers.StyleMap({
-    "default": OpenLayers.Util.applyDefaults({
+var context = {
+    getZIndex: function(feature) {
+        return (feature.geometry instanceof OpenLayers.Geometry.Point) ? 1 : 0;
+    }
+}
+var style = new OpenLayers.Style(OpenLayers.Util.applyDefaults({
         graphicWidth: 21,
         graphicHeight: 25,
         graphicYOffset: -25, // shift graphic up 28 pixels
         graphicOpacity: 1,
-        externalGraphic: 'http://www.openlayers.org/dev/img/marker.png'
-    }, OpenLayers.Feature.Vector.style['default'])
+        graphicZIndex: "${getZIndex}",
+        externalGraphic: 'http://www.openlayers.org/dev/img/marker.png',
+        strokeColor: 'blue',
+        strokeWidth: 3,
+        strokeOpacity: 0.5
+    }, OpenLayers.Feature.Vector.style['default']), {context: context}
+);
+var styleMap = new OpenLayers.StyleMap({
+    "default": style
 });
 var layer = new OpenLayers.Layer.Vector('track', {
-    styleMap: style
+    styleMap: styleMap,
+    rendererOptions: {
+        zIndexing: true
+    }
 });
 map.addLayer(layer);
 var drawControl = new OpenLayers.Control.DrawFeature(
