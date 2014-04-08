@@ -135,7 +135,9 @@ snappingControl.events.on({
     'snap': function(obj) {
         map.div.style.cursor = 'pointer';
         snapped = getSegmentIndex(obj.point);
-        drawControl.handler.style = style;
+        drawControl.handler.style = OpenLayers.Util.applyDefaults({
+            externalGraphic: 'marker_plus.png'
+        }, style);
     },
     'unsnap': function(obj) {
         this.map.div.style.cursor = '';
