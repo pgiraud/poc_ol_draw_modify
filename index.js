@@ -29,7 +29,7 @@ var context = {
         return (feature.geometry instanceof OpenLayers.Geometry.Point) ? 1 : 0;
     }
 }
-var style = new OpenLayers.Style(OpenLayers.Util.applyDefaults({
+var style = OpenLayers.Util.applyDefaults({
         graphicWidth: 35,
         graphicHeight: 46,
         graphicYOffset: -38,
@@ -38,16 +38,18 @@ var style = new OpenLayers.Style(OpenLayers.Util.applyDefaults({
         externalGraphic: 'marker.png',
         strokeColor: 'blue',
         strokeWidth: 3,
-        strokeOpacity: 0.5
-    }, OpenLayers.Feature.Vector.style['default']), {context: context}
-);
-var temporarystyle= new OpenLayers.Style(OpenLayers.Util.applyDefaults({
-        strokeColor: 'red'
-    }, OpenLayers.Feature.Vector.style['temporary']), {context: context}
-);
+        strokeOpacity: 0.5,
+        cursor: 'move'
+    }, OpenLayers.Feature.Vector.style['default']);
+var temporarystyle = OpenLayers.Util.applyDefaults({
+    strokeColor: 'red',
+    graphicName: 'square'
+}, OpenLayers.Feature.Vector.style['temporary']);
 var styleMap = new OpenLayers.StyleMap({
-    "default": style,
-    "temporary": temporarystyle
+    "default": new OpenLayers.Style(style, {context: context}),
+    // we don't want to use the temporary directly since it can be changed
+    // later
+    "temporary": new OpenLayers.Style(temporarystyle, {context: context})
 });
 var layer = new OpenLayers.Layer.Vector('track', {
     styleMap: styleMap,
@@ -124,19 +126,21 @@ function getSegmentIndex(point) {
         }
     }
     return segmentIndex;
-};
+}
 
 // stores the index of the segment to which the mouse is snapped
 var snapped = null;
+
 snappingControl.events.on({
     'snap': function(obj) {
         map.div.style.cursor = 'pointer';
         snapped = getSegmentIndex(obj.point);
-        return;
+        drawControl.handler.style = style;
     },
     'unsnap': function(obj) {
         this.map.div.style.cursor = '';
         snapped = null;
+        delete drawControl.handler.style;
     },
     scope: this
 });
