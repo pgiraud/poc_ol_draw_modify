@@ -38,8 +38,7 @@ var style = OpenLayers.Util.applyDefaults({
         externalGraphic: 'marker.png',
         strokeColor: 'blue',
         strokeWidth: 3,
-        strokeOpacity: 0.5,
-        cursor: 'move'
+        strokeOpacity: 0.5
     }, OpenLayers.Feature.Vector.style['default']);
 var temporarystyle = OpenLayers.Util.applyDefaults({
     strokeColor: 'red',
