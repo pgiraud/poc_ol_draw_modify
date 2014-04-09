@@ -96,6 +96,34 @@ layer.events.on({
     }
 });
 
+var HoverFeatureControl = OpenLayers.Class(OpenLayers.Control, {
+    initialize: function(layer, options) {
+        OpenLayers.Control.prototype.initialize.apply(this, [options]);
+        this.layer = layer;
+        this.handler = new OpenLayers.Handler.Feature(
+            this, layer, {
+                over: this.overFeature,
+                out: this.outFeature
+            }
+        );
+    },
+    overFeature: function(feature) {
+        if (feature.geometry instanceof OpenLayers.Geometry.Point) {
+            drawControl.deactivate();
+        }
+    },
+    outFeature: function(feature) {
+        drawControl.activate();
+    },
+    setMap: function(map) {
+        this.handler.setMap(map);
+        OpenLayers.Control.prototype.setMap.apply(this, arguments);
+    }
+});
+var hoverControl = new HoverFeatureControl(layer);
+map.addControl(hoverControl);
+hoverControl.activate();
+
 var modifyControl = new OpenLayers.Control.ModifyFeature(layer, {
     geometryTypes: ['OpenLayers.Geometry.Point']
 });
