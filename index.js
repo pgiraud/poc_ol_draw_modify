@@ -16,10 +16,10 @@ var options = {
 map = new OpenLayers.Map('map',options);
 
 map.setCenter(
-    new OpenLayers.LonLat(-71.147, 42.472).transform(
+    new OpenLayers.LonLat(7, 46.472).transform(
         new OpenLayers.Projection("EPSG:4326"),
         map.getProjectionObject()
-    ), 7
+    ),11
 );
 
 
@@ -86,6 +86,8 @@ layer.events.on({
             var line = new OpenLayers.Geometry.LineString(trackPoints);
             track = new OpenLayers.Feature.Vector(line);
             layer.addFeatures([track]);
+
+            getRoute();
         }
     },
     'featuremodified': function(obj) {
@@ -176,3 +178,32 @@ snappingControl.events.on({
 
 map.addControl(snappingControl);
 snappingControl.activate();
+
+
+var protocol = new OpenLayers.Protocol.Script({
+    callbackKey: 'jsonp',
+    callback: function(request) {
+        var feature = format.read(request.data.route_geometry);
+        console.log(feature.geometry);
+        //layer.addFeatures([feature]);
+    }
+});
+var format = new OpenLayers.Format.EncodedPolyline();
+// Calls the OSRM service
+function getRoute() {
+    var locs = [];
+    for (var i=0; i < trackPoints.length; i++) {
+        var pt = trackPoints[i].clone().transform('EPSG:3857', 'EPSG:4326')
+        locs.push([pt.x, pt.y].join(','));
+    }
+    locs = locs.join('&loc=');
+    locs = "?loc=" + locs;
+    protocol.read({
+        url: "http://schweizmobil-r2014.gis.internal/osrm/viaroute" + locs,
+        params: {
+            instructions: false,
+            output: 'json',
+            z: 11
+        }
+    });
+}
