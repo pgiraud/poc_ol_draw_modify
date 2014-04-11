@@ -167,7 +167,11 @@ function removeViaPosition(feature) {
     if (index) {
         viaPositions.splice(index, 1);
         layer.removeFeatures([feature]);
-        getRoute();
+        if (viaPositions.length > 1) {
+            getRoute();
+        } else {
+            layer.removeFeatures([trackFeature]);
+        }
     }
 }
 
