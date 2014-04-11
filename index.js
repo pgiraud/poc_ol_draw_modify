@@ -89,11 +89,6 @@ layer.events.on({
         if (viaPositions.length >= 2) {
             getRoute();
         }
-    },
-    'featuremodified': function(obj) {
-        if (viaPositions.length >= 2) {
-            getRoute();
-        }
     }
 });
 
@@ -107,39 +102,50 @@ function drawRoute(points) {
     layer.addFeatures([trackFeature]);
 }
 
-var HoverFeatureControl = OpenLayers.Class(OpenLayers.Control, {
+var dragTimeout;
+var dragControl = new OpenLayers.Control.DragFeature(layer, {
+    geometryTypes: ['OpenLayers.Geometry.Point'],
+    onEnter: function(obj) {
+        drawControl.deactivate();
+    },
+    onLeave: function(obj) {
+        drawControl.activate();
+    },
+    onDrag: function(obj) {
+        clearTimeout(dragTimeout);
+        dragTimeout = window.setTimeout(function() {
+            if (viaPositions.length >= 2) {
+                getRoute();
+            }
+        }, 100);
+    }
+});
+map.addControl(dragControl);
+dragControl.activate();
+
+var clickFeatureControl = new (OpenLayers.Class(OpenLayers.Control, {
     initialize: function(layer, options) {
         OpenLayers.Control.prototype.initialize.apply(this, [options]);
         this.layer = layer;
         this.handler = new OpenLayers.Handler.Feature(
             this, layer, {
-                over: this.overFeature,
-                out: this.outFeature
+                dblclick: this.removeFeature
             }
         );
     },
-    overFeature: function(feature) {
-        if (feature.geometry instanceof OpenLayers.Geometry.Point) {
-            drawControl.deactivate();
-        }
-    },
-    outFeature: function(feature) {
+    removeFeature: function(feature) {
+        removeViaPosition(feature);
+        // force draw control reactivation
         drawControl.activate();
     },
     setMap: function(map) {
         this.handler.setMap(map);
         OpenLayers.Control.prototype.setMap.apply(this, arguments);
     }
-});
-var hoverControl = new HoverFeatureControl(layer);
-map.addControl(hoverControl);
-hoverControl.activate();
+}))(layer);
+map.addControl(clickFeatureControl);
+clickFeatureControl.activate();
 
-var modifyControl = new OpenLayers.Control.ModifyFeature(layer, {
-    geometryTypes: ['OpenLayers.Geometry.Point']
-});
-map.addControl(modifyControl);
-modifyControl.activate();
 
 var snappingControl = new OpenLayers.Control.Snapping({
     layer: layer,
@@ -148,6 +154,22 @@ var snappingControl = new OpenLayers.Control.Snapping({
         tolerance: 15
     }
 });
+
+function removeViaPosition(feature) {
+    var index;
+    for (var i = 0; i < viaPositions.length; i++) {
+        var viaPosition = viaPositions[i];
+        if (viaPosition == feature.geometry) {
+            index = i;
+            break;
+        }
+    }
+    if (index) {
+        viaPositions.splice(index, 1);
+        layer.removeFeatures([feature]);
+        getRoute();
+    }
+}
 
 // get the index of the track segment to which the snapping occured
 function findTrackIndex(point) {
