@@ -71,24 +71,27 @@ drawControl.activate();
 
 // the track line
 var track;
+// the corresponding vector feature
+var trackFeature;
 // the track points (ordered)
-var trackPoints = [];
+var viaPositions = [];
 layer.events.on({
     'featureadded': function(obj) {
         if (!(obj.feature.geometry instanceof OpenLayers.Geometry.Point)) {
             return;
         }
         if (snapped !== null) {
-            trackPoints.splice(snapped + 1, 0, obj.feature.geometry);
+            var index = findViaIndex(snapped);
+            viaPositions.splice(index + 1, 0, obj.feature.geometry);
         } else {
-            trackPoints.push(obj.feature.geometry);
+            viaPositions.push(obj.feature.geometry);
         }
-        if (trackPoints.length >= 2) {
+        if (viaPositions.length >= 2) {
             getRoute();
         }
     },
     'featuremodified': function(obj) {
-        if (trackPoints.length >= 2) {
+        if (viaPositions.length >= 2) {
             getRoute();
         }
     }
@@ -96,12 +99,12 @@ layer.events.on({
 
 function drawRoute(points) {
     // remove any existing track
-    if (track) {
-        layer.removeFeatures([track]);
+    if (trackFeature) {
+        layer.removeFeatures([trackFeature]);
     }
-    var line = new OpenLayers.Geometry.LineString(points);
-    track = new OpenLayers.Feature.Vector(line);
-    layer.addFeatures([track]);
+    track = new OpenLayers.Geometry.LineString(points);
+    trackFeature = new OpenLayers.Feature.Vector(track);
+    layer.addFeatures([trackFeature]);
 }
 
 var HoverFeatureControl = OpenLayers.Class(OpenLayers.Control, {
@@ -146,22 +149,39 @@ var snappingControl = new OpenLayers.Control.Snapping({
     }
 });
 
-// get the index of the segment to which the snapping occured
-function getSegmentIndex(point) {
+// get the index of the track segment to which the snapping occured
+function findTrackIndex(point) {
     var segmentIndex;
-    var i;
-    for (i=1; i < trackPoints.length; i++) {
-        var components = [trackPoints[i - 1], trackPoints[i]];
+    var minDist = Number.MAX_VALUE;
+    for (var i = 1; i < track.components.length; i++) {
         var segment = new OpenLayers.Geometry.LineString([
-            trackPoints[i - 1].clone(),
-            trackPoints[i].clone()
+            track.components[i - 1].clone(),
+            track.components[i].clone()
         ]);
-        if (point.distanceTo(segment) < 0.001) {
-            segmentIndex = i - 1;
-            continue;
+        var dist = point.distanceTo(segment);
+        if (dist < minDist) {
+            minDist = dist;
+            segmentIndex = i;
         }
     }
     return segmentIndex;
+}
+
+// find at which index in the via points the new via point should be added
+function findViaIndex(newViaPoint) {
+    // find the index along the whole track
+    var newTrackIndex = findTrackIndex(newViaPoint);
+
+    // now compare with the index of each via points
+    var index = 0;
+    var i = 0;
+    var before = true;
+    while ( before ) {
+        index = i;
+        i++;
+        before = findTrackIndex(viaPositions[i]) < newTrackIndex;
+    }
+    return index;
 }
 
 // stores the index of the segment to which the mouse is snapped
@@ -170,7 +190,7 @@ var snapped = null;
 snappingControl.events.on({
     'snap': function(obj) {
         map.div.style.cursor = 'pointer';
-        snapped = getSegmentIndex(obj.point);
+        snapped = obj.point;
         drawControl.handler.style = OpenLayers.Util.applyDefaults({
             externalGraphic: 'marker_plus.png'
         }, style);
@@ -193,7 +213,6 @@ var protocol = new OpenLayers.Protocol.Script({
         var decoded = decodeGeometry(request.data.route_geometry, OSRM_PRECISION);
         var lonlats = decoded.lonlat;
         var points = [];
-        console.log(lonlats[0], lonlats[lonlats.length - 1]);
         for (var i = 0; i < lonlats.length; i++) {
             var lonlat = lonlats[i];
             var point = new OpenLayers.Geometry.Point(lonlat[1], lonlat[0]);
@@ -206,12 +225,11 @@ var protocol = new OpenLayers.Protocol.Script({
 // Calls the OSRM service
 function getRoute() {
     var locs = [];
-    for (var i=0; i < trackPoints.length; i++) {
-        var pt = trackPoints[i].clone().transform(map.getProjection(), 'EPSG:4326')
+    for (var i=0; i < viaPositions.length; i++) {
+        var pt = viaPositions[i].clone().transform(map.getProjection(), 'EPSG:4326')
         // Note: loc=lat,lon
         locs.push([pt.y.toPrecision(6), pt.x.toPrecision(6)].join(','));
     }
-    console.log(locs);
     locs = locs.join('&loc=');
     locs = "?loc=" + locs;
     protocol.read({
