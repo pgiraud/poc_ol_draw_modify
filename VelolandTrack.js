@@ -63,11 +63,35 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
     dirty: false,
 
     /**
+     * Property: layer
+     * {OpenLayers.Layer.Vector} The layer in which the via points features are
+     *     added. This is the layer with which the controls are configured.
+     */
+    layer: null,
+
+    /**
+     * Property: trackLayer
+     * {OpenLayers.Layer.Vector} The layer in which the route line feature is
+     *     added.
+     */
+    trackLayer: null,
+
+    /**
      * Method: initialize
      */
-    initialize: function(layer, options) {
+    initialize: function() {
         OpenLayers.Control.prototype.initialize.apply(this, [options]);
-        this.layer = layer;
+
+        this.layer = new OpenLayers.Layer.Vector('the first layer', {
+            rendererOptions: {
+                zIndexing: true
+            },
+            displayInLayerSwitcher: false
+        });
+
+        this.trackLayer = new OpenLayers.Layer.Vector('Track layer', {
+            displayInLayerSwitcher: false
+        });
 
         this.createStyleMap();
 
@@ -102,6 +126,7 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
 
     setMap: function(map) {
         OpenLayers.Control.prototype.setMap.apply(this, arguments);
+        this.map.addLayers([this.trackLayer, this.layer]);
         this.map.addControls([
             this.drawControl,
             this.clickControl,
@@ -114,37 +139,21 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
      * Creates the StyleMap and configure the layer with it
      */
     createStyleMap: function() {
-        var context = {
-            getZIndex: function(feature) {
-                return (feature.geometry instanceof OpenLayers.Geometry.Point) ? 1 : 0;
-            },
-            getColor: function(feature) {
-                return feature.background ? 'white' : 'red';
-            },
-            getStrokeWidth: function(feature) {
-                return feature.background ? 7 : 3;
-            }
-        };
         var style = OpenLayers.Util.applyDefaults({
                 graphicWidth: 24,
                 graphicHeight: 24,
                 graphicOpacity: 2,
-                graphicZIndex: "${getZIndex}",
-                externalGraphic: 'images/marker.png',
-                strokeColor: "${getColor}",
-                strokeWidth: "${getStrokeWidth}",
-                strokeOpacity: 0.6
+                externalGraphic: 'images/marker.png'
             }, OpenLayers.Feature.Vector.style['default']);
-        var temporarystyle = OpenLayers.Util.applyDefaults({
+        var temporaryStyle = OpenLayers.Util.applyDefaults({
             strokeColor: 'red',
-            graphicName: 'square',
-            graphicZIndex: 2
+            graphicName: 'square'
         }, OpenLayers.Feature.Vector.style.temporary);
         var styleMap = new OpenLayers.StyleMap({
-            "default": new OpenLayers.Style(style, {context: context}),
+            "default": style,
             // we don't want to use the temporary directly since it can be changed
             // later
-            "temporary": new OpenLayers.Style(temporarystyle, {context: context})
+            "temporary": temporaryStyle
         });
         this.layer.styleMap = styleMap;
     },
@@ -228,7 +237,7 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
     createSnappingControl: function() {
         this.snappingControl = new OpenLayers.Control.Snapping({
             layer: this.layer,
-            precedence: ['edge'],
+            targets: [this.trackLayer],
             defaults: {
                 tolerance: 15
             }
@@ -307,18 +316,37 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
     drawRoute: function(points) {
         // remove any existing track
         if (this.trackFeature) {
-            this.layer.removeFeatures([this.trackFeature, this.lineBackFeature]);
+            this.trackLayer.removeFeatures([
+                this.trackFeature,
+                this.lineBackFeature
+            ]);
         }
         var line = new OpenLayers.Geometry.LineString(points);
         if (!this.trackFeature) {
-            this.trackFeature = new OpenLayers.Feature.Vector(line);
-            this.lineBackFeature = new OpenLayers.Feature.Vector(line.clone());
+            this.trackFeature = new OpenLayers.Feature.Vector(
+                line,
+                null,
+                {
+                    strokeColor: "red",
+                    strokeWidth: 3,
+                    strokeOpacity: 0.5
+                }
+            );
+            this.lineBackFeature = new OpenLayers.Feature.Vector(
+                line.clone(),
+                null,
+                {
+                    strokeColor: "white",
+                    strokeWidth: 7,
+                    strokeOpacity: 0.7
+                }
+            );
             this.lineBackFeature.background = true;
         } else {
             this.trackFeature.geometry = line;
             this.lineBackFeature.geometry = line.clone();
         }
-        this.layer.addFeatures([this.lineBackFeature, this.trackFeature]);
+        this.trackLayer.addFeatures([this.lineBackFeature, this.trackFeature]);
     },
 
     /**
@@ -343,8 +371,8 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
             if (this.viaPoints.length > 1) {
                 this.events.triggerEvent('trackmodified');
                 this.onTrackModified();
-                this.layer.removeFeatures([this.trackFeature,
-                                           this.lineBackFeature]);
+                this.trackLayer.removeFeatures([this.trackFeature,
+                                                this.lineBackFeature]);
             }
         }
     },
@@ -417,13 +445,16 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
      */
     loadTrack: function(feature) {
         if (this.active) {
-            this.layer.removeFeatures([this.trackFeature, this.lineBackFeature]);
+        this.trackLayer.removeFeatures([
+            this.trackFeature,
+            this.lineBackFeature
+        ]);
         } else {
             this.clearDrawing();
         }
         this.trackFeature = feature;
         this.lineBackFeature = feature.clone();
-        this.layer.addFeatures([this.lineBackFeature, this.trackFeature]);
+        this.trackLayer.addFeatures([this.lineBackFeature, this.trackFeature]);
 
         if (!this.active) {
             this.layer.map.zoomToExtent(this.layer.getDataExtent());

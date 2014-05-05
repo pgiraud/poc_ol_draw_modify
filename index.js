@@ -26,14 +26,7 @@ map.setCenter(
     ),12
 );
 
-var layer2 = new OpenLayers.Layer.Vector('my second layer', {
-    rendererOptions: {
-        zIndexing: true
-    }
-});
-map.addLayer(layer2);
-
-var control = new VelolandTrack(layer2);
+var control = new VelolandTrack();
 map.addControl(control);
 control.activate();
 
