@@ -77,23 +77,60 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
     trackLayer: null,
 
     /**
+     * Property: trackStyle
+     * {Object}
+     */
+    trackStyle: {
+        strokeColor: "red",
+        strokeWidth: 3,
+        strokeOpacity: 0.8
+    },
+
+    /**
+     * Property: trackBgStyle
+     * {Object}
+     */
+    trackBgStyle: {
+        strokeColor: "white",
+        strokeWidth: 9,
+        strokeOpacity: 0.6
+    },
+
+    /**
      * Method: initialize
      */
-    initialize: function() {
+    initialize: function(options) {
         OpenLayers.Control.prototype.initialize.apply(this, [options]);
 
-        this.layer = new OpenLayers.Layer.Vector('the first layer', {
+        var style = OpenLayers.Util.applyDefaults({
+                graphicWidth: 24,
+                graphicHeight: 24,
+                graphicOpacity: 2,
+                externalGraphic: 'images/marker.png'
+            }, OpenLayers.Feature.Vector.style['default']);
+
+        var temporaryStyle = OpenLayers.Util.applyDefaults({
+            strokeColor: 'red',
+            graphicName: 'square'
+        }, OpenLayers.Feature.Vector.style.temporary);
+
+        var styleMap = new OpenLayers.StyleMap({
+            "default": style,
+            // we don't want to use the temporary directly since it can be changed
+            // later
+            "temporary": temporaryStyle
+        });
+        this.layer = new OpenLayers.Layer.Vector('the draw controls layer', {
             rendererOptions: {
                 zIndexing: true
             },
-            displayInLayerSwitcher: false
+            displayInLayerSwitcher: false,
+            styleMap: styleMap
         });
 
         this.trackLayer = new OpenLayers.Layer.Vector('Track layer', {
             displayInLayerSwitcher: false
         });
-
-        this.createStyleMap();
 
         this.createDrawControl();
         this.createDragControl();
@@ -132,30 +169,6 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
             this.clickControl,
             this.dragControl
         ]);
-    },
-
-    /**
-     * Method: createStyleMap
-     * Creates the StyleMap and configure the layer with it
-     */
-    createStyleMap: function() {
-        var style = OpenLayers.Util.applyDefaults({
-                graphicWidth: 24,
-                graphicHeight: 24,
-                graphicOpacity: 2,
-                externalGraphic: 'images/marker.png'
-            }, OpenLayers.Feature.Vector.style['default']);
-        var temporaryStyle = OpenLayers.Util.applyDefaults({
-            strokeColor: 'red',
-            graphicName: 'square'
-        }, OpenLayers.Feature.Vector.style.temporary);
-        var styleMap = new OpenLayers.StyleMap({
-            "default": style,
-            // we don't want to use the temporary directly since it can be changed
-            // later
-            "temporary": temporaryStyle
-        });
-        this.layer.styleMap = styleMap;
     },
 
     /**
@@ -326,20 +339,12 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
             this.trackFeature = new OpenLayers.Feature.Vector(
                 line,
                 null,
-                {
-                    strokeColor: "red",
-                    strokeWidth: 3,
-                    strokeOpacity: 0.5
-                }
+                this.trackStyle
             );
             this.lineBackFeature = new OpenLayers.Feature.Vector(
                 line.clone(),
                 null,
-                {
-                    strokeColor: "white",
-                    strokeWidth: 7,
-                    strokeOpacity: 0.7
-                }
+                this.trackBgStyle
             );
             this.lineBackFeature.background = true;
         } else {
@@ -432,6 +437,7 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
     clearDrawing: function() {
         this.viaPoints = [];
         this.layer.removeFeatures(this.layer.features);
+        this.trackLayer.removeFeatures(this.trackLayer.features);
         this.trackFeature = null;
         this.lineBackFeature = null;
         this.dirty = false;
@@ -445,19 +451,21 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
      */
     loadTrack: function(feature) {
         if (this.active) {
-        this.trackLayer.removeFeatures([
-            this.trackFeature,
-            this.lineBackFeature
-        ]);
+            this.trackLayer.removeFeatures([
+                this.trackFeature,
+                this.lineBackFeature
+            ]);
         } else {
             this.clearDrawing();
         }
         this.trackFeature = feature;
+        this.trackFeature.style = this.trackStyle;
         this.lineBackFeature = feature.clone();
+        this.lineBackFeature.style = this.trackBgStyle;
         this.trackLayer.addFeatures([this.lineBackFeature, this.trackFeature]);
 
         if (!this.active) {
-            this.layer.map.zoomToExtent(this.layer.getDataExtent());
+            this.map.zoomToExtent(this.trackLayer.getDataExtent());
         }
     },
 
