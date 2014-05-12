@@ -207,12 +207,7 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
         this.dragControl = new OpenLayers.Control.DragFeature(self.layer, {
             geometryTypes: ['OpenLayers.Geometry.Point'],
             onEnter: function(obj) {
-                // defer deactivating to prevent error with drawFeature control being
-                // deactivated while adding a point
-                window.setTimeout(function() {
-                    self.drawControl.deactivate();},
-                    1
-                );
+                self.drawControl.deactivate();
             },
             onLeave: function(obj) {
                 self.drawControl.activate();
@@ -391,10 +386,10 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
             this.viaPoints.splice(index, 1);
             this.layer.removeFeatures([feature]);
             if (this.viaPoints.length > 1) {
-                this.events.triggerEvent('trackmodified');
-                this.onTrackModified();
                 this.trackLayer.removeFeatures([this.trackFeature,
                                                 this.lineBackFeature]);
+                this.events.triggerEvent('trackmodified');
+                this.onTrackModified();
             }
             this.layer.redraw();
         }
