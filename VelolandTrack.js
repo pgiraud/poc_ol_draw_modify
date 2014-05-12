@@ -102,20 +102,36 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
     initialize: function(options) {
         OpenLayers.Control.prototype.initialize.apply(this, [options]);
 
+        var self = this;
+        var context = {
+            getMarker: function(feature) {
+                var vp = self.viaPoints;
+                if (vp.length >= 1 && feature.geometry == vp[0]) {
+                    return 'images/marker_start.png';
+                }
+                if (vp.length > 1 && feature.geometry == vp[vp.length - 1]) {
+                    return 'images/marker_finish.png';
+                }
+                return 'images/marker.png';
+            }
+        };
+
         var style = OpenLayers.Util.applyDefaults({
                 graphicWidth: 24,
                 graphicHeight: 24,
                 graphicOpacity: 2,
-                externalGraphic: 'images/marker.png'
+                externalGraphic: "${getMarker}"
             }, OpenLayers.Feature.Vector.style['default']);
 
         var temporaryStyle = OpenLayers.Util.applyDefaults({
-            strokeColor: 'red',
-            graphicName: 'square'
+            graphicWidth: 24,
+            graphicHeight: 24,
+            graphicOpacity: 2,
+            externalGraphic: 'images/marker_add.png'
         }, OpenLayers.Feature.Vector.style.temporary);
 
         var styleMap = new OpenLayers.StyleMap({
-            "default": style,
+            "default": new OpenLayers.Style(style, {context: context}),
             // we don't want to use the temporary directly since it can be changed
             // later
             "temporary": temporaryStyle
@@ -281,6 +297,7 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
                 if (this.viaPoints.length >= 2 && this.active) {
                     this.onTrackModified();
                 }
+                this.layer.redraw();
             },
             'scope': this
         });
@@ -379,6 +396,7 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
                 this.trackLayer.removeFeatures([this.trackFeature,
                                                 this.lineBackFeature]);
             }
+            this.layer.redraw();
         }
     },
 
