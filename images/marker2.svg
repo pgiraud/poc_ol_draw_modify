@@ -51,11 +51,6 @@
     </linearGradient>
     <pattern
        inkscape:collect="always"
-       xlink:href="#pattern5836"
-       id="pattern5846"
-       patternTransform="matrix(1.2380952,0,0,1.2380952,4.9285713,6.9285713)" />
-    <pattern
-       inkscape:collect="always"
        xlink:href="#pattern5753"
        id="pattern5758"
        patternTransform="scale(1.0714286,1.0714286)" />
@@ -145,15 +140,6 @@
          offset="1"
          id="stop3797-8" />
     </linearGradient>
-    <linearGradient
-       y2="12.5"
-       x2="17.5"
-       y1="12.5"
-       x1="3.5"
-       gradientUnits="userSpaceOnUse"
-       id="linearGradient3817"
-       xlink:href="#linearGradient3793-1"
-       inkscape:collect="always" />
     <filter
        id="filter3919"
        inkscape:label="Drop Shadow"
@@ -749,19 +735,6 @@
          operator="over"
          result="composite2" />
     </filter>
-    <filter
-       inkscape:collect="always"
-       id="filter6295"
-       x="-0.23999999"
-       width="1.48"
-       y="-0.23999999"
-       height="1.48"
-       color-interpolation-filters="sRGB">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="1.3"
-         id="feGaussianBlur6297" />
-    </filter>
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient6333"
@@ -784,31 +757,6 @@
          stdDeviation="0.9"
          id="feGaussianBlur6361" />
     </filter>
-    <filter
-       inkscape:collect="always"
-       id="filter4630"
-       x="-0.29388788"
-       width="1.5877758"
-       y="-0.20281199"
-       height="1.405624"
-       color-interpolation-filters="sRGB">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="1.7829575"
-         id="feGaussianBlur4632" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       id="filter4839"
-       x="-0.2967965"
-       width="1.593593"
-       y="-0.20144958"
-       height="1.4028992">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="1.6076477"
-         id="feGaussianBlur4841" />
-    </filter>
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient3793-1"
@@ -818,31 +766,7 @@
        y1="12.5"
        x2="17.5"
        y2="12.5"
-       gradientTransform="matrix(1.0769231,0,0,1.0769231,3.2258826,7.1647205)" />
-    <filter
-       inkscape:collect="always"
-       id="filter4849"
-       x="-0.29679651"
-       width="1.593593"
-       y="-0.20144957"
-       height="1.4028991">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="1.7313129"
-         id="feGaussianBlur4851" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       id="filter4860"
-       x="-0.29679651"
-       width="1.593593"
-       y="-0.20144957"
-       height="1.4028991">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="1.7313129"
-         id="feGaussianBlur4862" />
-    </filter>
+       gradientTransform="matrix(1.0769231,0,0,1.0769231,2.7258826,6.6647206)" />
     <filter
        inkscape:collect="always"
        id="filter4868"
@@ -880,13 +804,13 @@
      id="namedview2997"
      showgrid="true"
      showguides="false"
-     inkscape:zoom="10.26087"
-     inkscape:cx="-9.6885566"
-     inkscape:cy="27.353655"
+     inkscape:zoom="7.504807"
+     inkscape:cx="-34.553627"
+     inkscape:cy="18.347912"
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g4878"
+     inkscape:current-layer="g4894"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
@@ -935,7 +859,7 @@
   </g>
   <g
      transform="translate(-1.533575,-5.6262591)"
-     style="display:inline"
+     style="display:none"
      inkscape:label="Layer"
      id="g4845"
      inkscape:groupmode="layer">
@@ -943,8 +867,58 @@
        sodipodi:nodetypes="zccczzsz"
        inkscape:connector-curvature="0"
        id="path4847"
+       d="m 7.033575,15.126259 c 0,1 0,12 0,12 l 7.033575,6.626259 6.966425,-6.626259 c 0,0 0,-11 0,-12 0,-1 -1,-2 -2,-2 -1,0 -9,0 -10,0 -1,0 -2,1 -2,2 z"
+       style="color:#000000;fill:url(#linearGradient4843);fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="g4888"
+     inkscape:label="profile"
+     style="display:none"
+     transform="translate(-1.533575,-5.6262591)">
+    <path
+       style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="m 7.033575,15.126259 c 0,1 0,12 0,12 l 7.033575,6.626259 6.966425,-6.626259 c 0,0 0,-11 0,-12 0,-1 -1,-2 -2,-2 -1,0 -9,0 -10,0 -1,0 -2,1 -2,2 z"
+       id="path4890"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="zccczzsz" />
+    <path
+       style="fill:none;stroke:#ff0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 19,19 0,0 c 0,0 -0.724365,-0.617577 -1,-1 l -2,-4 -2,-2 -2.5,1 -2,2 -1.5,1 -1,1 -1,1"
+       id="path4892"
+       inkscape:connector-curvature="0"
+       transform="translate(1.533575,5.6262591)"
+       sodipodi:nodetypes="cscccccccc" />
+  </g>
+  <g
+     transform="translate(-1.533575,-5.6262591)"
+     style="display:inline"
+     inkscape:label="profile copy"
+     id="g4894"
+     inkscape:groupmode="layer">
+    <path
+       style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        d="m 7.533575,15.626259 c 0,1 0,12 0,12 l 7.033575,6.626259 6.966425,-6.626259 c 0,0 0,-11 0,-12 0,-1 -1,-2 -2,-2 -1,0 -9,0 -10,0 -1,0 -2,1 -2,2 z"
-       style="color:#000000;fill:url(#linearGradient4843);fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:2.03600001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       id="path4890-0"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="zccczzsz" />
+    <path
+       style="fill:none;stroke:#ff0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
+       d="m 21.033575,25.126259 0,0 c 0,0 -0.724365,-0.617577 -1,-1 l -2,-4 -2,-2 -2.5,1 -2,2 -1.5,1 -1,1 -1,1"
+       id="path4892-9"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cscccccccc" />
+    <path
+       style="color:#000000;fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="m 21.533575,25.313759 c -0.66597,-0.501911 -1.335291,-0.958979 -1.5,-1.1875 l -2,-4 -2,-2 -2.5,1 -2,2 -1.5,1 -1,1 -1.5,1.5 0,3 7.03125,6.625 6.96875,-6.625 0,-2.15625 0,0 0,-0.15625 z"
+       id="path4924"
+       inkscape:connector-curvature="0" />
+    <path
+       style="color:#000000;fill:none;stroke:#ff0000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="m 7.533575,15.626259 c 0,1 0,12 0,12 l 7.033575,6.626259 6.966425,-6.626259 c 0,0 0,-11 0,-12 0,-1 -1,-2 -2,-2 -1,0 -9,0 -10,0 -1,0 -2,1 -2,2 z"
+       id="path4890-6"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="zccczzsz" />
   </g>
   <g
      inkscape:groupmode="layer"

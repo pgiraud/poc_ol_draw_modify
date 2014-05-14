@@ -83,7 +83,7 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
     trackStyle: {
         strokeColor: "red",
         strokeWidth: 3,
-        strokeOpacity: 0.8
+        strokeOpacity: 1
     },
 
     /**
@@ -92,8 +92,8 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
      */
     trackBgStyle: {
         strokeColor: "white",
-        strokeWidth: 9,
-        strokeOpacity: 0.6
+        strokeWidth: 7,
+        strokeOpacity: 0.5
     },
 
     /**
@@ -386,7 +386,7 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
                 break;
             }
         }
-        if (index) {
+        if (typeof index != 'undefined') {
             this.viaPoints.splice(index, 1);
             this.layer.removeFeatures([feature]);
             if (this.viaPoints.length > 1) {
