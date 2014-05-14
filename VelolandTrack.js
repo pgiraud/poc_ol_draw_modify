@@ -117,16 +117,18 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
         };
 
         var style = OpenLayers.Util.applyDefaults({
-                graphicWidth: 24,
-                graphicHeight: 24,
+                graphicWidth: 27,
+                graphicHeight: 34,
                 graphicOpacity: 2,
+                graphicYOffset: -30,
                 externalGraphic: "${getMarker}"
             }, OpenLayers.Feature.Vector.style['default']);
 
         var temporaryStyle = OpenLayers.Util.applyDefaults({
-            graphicWidth: 24,
-            graphicHeight: 24,
+            graphicWidth: 27,
+            graphicHeight: 34,
             graphicOpacity: 2,
+            graphicYOffset: -38,
             externalGraphic: 'images/marker_add.png'
         }, OpenLayers.Feature.Vector.style.temporary);
 
@@ -207,6 +209,8 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
         this.dragControl = new OpenLayers.Control.DragFeature(self.layer, {
             geometryTypes: ['OpenLayers.Geometry.Point'],
             onEnter: function(obj) {
+                // deactivate the drawControl so that the sketch marker isn't
+                // displayed
                 self.drawControl.deactivate();
             },
             onLeave: function(obj) {
@@ -328,8 +332,8 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
      *     has no knowledge about if a service should be called or not.
      */
     onTrackModified: function() {
-        this.events.triggerEvent('trackmodified');
         this.dirty = true;
+        this.events.triggerEvent('trackmodified');
     },
     /**
      * Method: drawRoute
