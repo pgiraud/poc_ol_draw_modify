@@ -490,16 +490,17 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
      * Method: editTrack
      */
     editTrack: function() {
-        // old track or track with no routing
+        var points = [];
+
+        // old track
         if (!this.trackFeature.attributes.via_points) {
             var comps = this.trackFeature.geometry.components;
             for (var i = 0; i < comps.length; i++) {
                 var f = new OpenLayers.Feature.Vector(comps[i].clone());
                 f.state = OpenLayers.State.INSERT;
-                this.layer.addFeatures([f]);
+                points.push(f);
             }
         }
-        // track created with the new routing service
         else {
             var viaPts = Ext.util.JSON.decode(
                 this.trackFeature.attributes.via_points);
@@ -510,9 +511,15 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
                 );
                 var f = new OpenLayers.Feature.Vector(p);
                 f.state = OpenLayers.State.INSERT;
-                this.layer.addFeatures([f]);
+                points.push(f);
             }
         }
+
+        for (var i = 0; i < points.length; i++) {
+            this.viaPoints.push(points[i].geometry);
+        }
+
+        this.layer.addFeatures(points, { silent: true });
         this.activate();
     },
 
