@@ -102,38 +102,24 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
     initialize: function(options) {
         OpenLayers.Control.prototype.initialize.apply(this, [options]);
 
-        var self = this;
-        var context = {
-            getMarker: function(feature) {
-                var vp = self.viaPoints;
-                if (vp.length >= 1 && feature.geometry == vp[0]) {
-                    return 'images/marker_start.png';
-                }
-                if (vp.length > 1 && feature.geometry == vp[vp.length - 1]) {
-                    return 'images/marker_finish.png';
-                }
-                return 'images/marker.png';
-            }
-        };
-
         var style = OpenLayers.Util.applyDefaults({
-                graphicWidth: 27,
-                graphicHeight: 34,
-                graphicOpacity: 2,
-                graphicYOffset: -30,
-                externalGraphic: "${getMarker}"
-            }, OpenLayers.Feature.Vector.style['default']);
+            strokeOpacity: 1,
+            strokeColor: "white",
+            strokeWidth: 2,
+            fillOpacity: 1,
+            fillColor: "red"
+        }, OpenLayers.Feature.Vector.style['default']);
 
         var temporaryStyle = OpenLayers.Util.applyDefaults({
-            graphicWidth: 27,
-            graphicHeight: 34,
-            graphicOpacity: 2,
-            graphicYOffset: -38,
-            externalGraphic: 'images/marker_add.png'
-        }, OpenLayers.Feature.Vector.style.temporary);
+            strokeOpacity: 1,
+            strokeColor: "red",
+            strokeWidth: 2,
+            fillOpacity: 0,
+            pointRadius: 7 
+        }, OpenLayers.Feature.Vector.style['default']);
 
         var styleMap = new OpenLayers.StyleMap({
-            "default": new OpenLayers.Style(style, {context: context}),
+            "default": style,
             // we don't want to use the temporary directly since it can be changed
             // later
             "temporary": temporaryStyle
@@ -312,7 +298,9 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
                 this.map.div.style.cursor = 'pointer';
                 this.snapped = obj.point;
                 this.drawControl.handler.style = OpenLayers.Util.applyDefaults({
-                    externalGraphic: 'images/marker_plus.png'
+                    fillOpacity: 0.7,
+                    strokeOpacity: 0.7,
+                    pointRadius: 7 
                 }, this.layer.styleMap.styles['default'].defaultStyle);
             },
             'unsnap': function(obj) {
