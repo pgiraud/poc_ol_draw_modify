@@ -115,7 +115,7 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
             strokeColor: "red",
             strokeWidth: 2,
             fillOpacity: 0,
-            pointRadius: 7 
+            pointRadius: 7
         }, OpenLayers.Feature.Vector.style['default']);
 
         var styleMap = new OpenLayers.StyleMap({
@@ -203,12 +203,20 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
                 self.drawControl.activate();
             },
             onDrag: function(obj) {
+                obj.style = OpenLayers.Util.applyDefaults({
+                    fillOpacity: 0.5,
+                    strokeOpacity: 0.5
+                }, this.layer.styleMap.styles['default'].defaultStyle);
                 clearTimeout(self.dragTimeout);
                 self.dragTimeout = window.setTimeout(function() {
                     if (self.viaPoints.length >= 2) {
                         self.onTrackModified();
                     }
                 }, 100);
+            },
+            onComplete: function(obj) {
+                obj.style = null;
+                this.layer.drawFeature(obj);
             }
         });
     },
@@ -300,7 +308,7 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
                 this.drawControl.handler.style = OpenLayers.Util.applyDefaults({
                     fillOpacity: 0.7,
                     strokeOpacity: 0.7,
-                    pointRadius: 7 
+                    pointRadius: 7
                 }, this.layer.styleMap.styles['default'].defaultStyle);
             },
             'unsnap': function(obj) {
