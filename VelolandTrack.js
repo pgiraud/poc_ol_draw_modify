@@ -308,7 +308,7 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
                 this.drawControl.handler.style = OpenLayers.Util.applyDefaults({
                     fillOpacity: 0.7,
                     strokeOpacity: 0.7,
-                    pointRadius: 7
+                    pointRadius: 5
                 }, this.layer.styleMap.styles['default'].defaultStyle);
             },
             'unsnap': function(obj) {
