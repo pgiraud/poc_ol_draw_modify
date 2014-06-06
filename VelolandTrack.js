@@ -97,29 +97,53 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
     },
 
     /**
+     * Property: styleContext
+     * {Object} A context to be used when styling viaPoints. Style may be
+     * différence regarding if it's the last point or not.
+     */
+    styleContext: null,
+
+    /**
      * Method: initialize
      */
     initialize: function(options) {
         OpenLayers.Control.prototype.initialize.apply(this, [options]);
 
+        var self = this;
+        this.styleContext = {
+            getStrokeColor: function(feature) {
+                var vp = self.viaPoints;
+                var last = vp[vp.length - 1];
+                return (vp.length === 0 || last == feature.geometry) ?
+                    'red' : 'white';
+            },
+            getFillColor: function(feature) {
+                var vp = self.viaPoints;
+                var last = vp[vp.length - 1];
+                return (vp.length === 0 || last == feature.geometry) ?
+                    'white' : 'red';
+            }
+        };
+
         var style = OpenLayers.Util.applyDefaults({
             strokeOpacity: 1,
-            strokeColor: "white",
+            strokeColor: "${getStrokeColor}",
             strokeWidth: 2,
             fillOpacity: 1,
-            fillColor: "red"
+            fillColor: "${getFillColor}"
         }, OpenLayers.Feature.Vector.style['default']);
 
         var temporaryStyle = OpenLayers.Util.applyDefaults({
-            strokeOpacity: 1,
+            strokeOpacity: 0.8,
             strokeColor: "red",
             strokeWidth: 2,
-            fillOpacity: 0,
-            pointRadius: 7
+            fillColor: "white",
+            fillOpacity: 0.4,
+            pointRadius: 5
         }, OpenLayers.Feature.Vector.style['default']);
 
         var styleMap = new OpenLayers.StyleMap({
-            "default": style,
+            "default": new OpenLayers.Style(style, {context: this.styleContext}),
             // we don't want to use the temporary directly since it can be changed
             // later
             "temporary": temporaryStyle
@@ -195,20 +219,22 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
         this.dragControl = new OpenLayers.Control.DragFeature(self.layer, {
             geometryTypes: ['OpenLayers.Geometry.Point'],
             onEnter: function(obj) {
-                // deactivate the drawControl so that the sketch marker isn't
-                // displayed
-                window.setTimeout(function() {
-                    self.drawControl.deactivate();
-                }, 1);
+                self.drawControl.deactivate();
             },
             onLeave: function(obj) {
                 self.drawControl.activate();
             },
             onDrag: function(obj) {
-                obj.style = OpenLayers.Util.applyDefaults({
+                var style = OpenLayers.Util.applyDefaults({
                     fillOpacity: 0.5,
                     strokeOpacity: 0.5
                 }, this.layer.styleMap.styles['default'].defaultStyle);
+                style = new OpenLayers.Style(
+                    style,
+                    {context: self.styleContext}
+                );
+                obj.style = style.createSymbolizer(obj);
+
                 clearTimeout(self.dragTimeout);
                 self.dragTimeout = window.setTimeout(function() {
                     if (self.viaPoints.length >= 2) {
@@ -307,11 +333,17 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
             'snap': function(obj) {
                 this.map.div.style.cursor = 'pointer';
                 this.snapped = obj.point;
-                this.drawControl.handler.style = OpenLayers.Util.applyDefaults({
+                var style = OpenLayers.Util.applyDefaults({
                     fillOpacity: 0.7,
                     strokeOpacity: 0.7,
                     pointRadius: 5
                 }, this.layer.styleMap.styles['default'].defaultStyle);
+                style = new OpenLayers.Style(
+                    style,
+                    {context: this.styleContext}
+                );
+
+                this.drawControl.handler.style = style.createSymbolizer(obj.point);
             },
             'unsnap': function(obj) {
                 this.map.div.style.cursor = '';
