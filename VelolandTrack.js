@@ -197,7 +197,9 @@ VelolandTrack = OpenLayers.Class(OpenLayers.Control, {
             onEnter: function(obj) {
                 // deactivate the drawControl so that the sketch marker isn't
                 // displayed
-                self.drawControl.deactivate();
+                window.setTimeout(function() {
+                    self.drawControl.deactivate();
+                }, 1);
             },
             onLeave: function(obj) {
                 self.drawControl.activate();
